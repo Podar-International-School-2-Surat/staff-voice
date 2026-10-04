@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leadership Listening — Podar International School, Jahangirabad</title>
+<style>
+  :root{
+    --paper:#F6F2E9; --paper-2:#EFE9DA; --ink:#242524; --ink-soft:#5B5A54;
+    --navy:#17233D; --brass:#AD8A4E; --brass-light:#E7D9B8;
+    --oxblood:#6E2A34; --sage:#4C6B4F; --sage-light:#DCE6DA;
+    --line:rgba(23,35,61,0.14); --radius:3px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{background:var(--paper);color:var(--ink);font-family:'IBM Plex Sans','Segoe UI',Arial,sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased;}
+  h1,h2,h3,.serif{font-family:'Source Serif 4','Georgia',serif;}
+  .masthead{background:var(--navy);color:var(--paper);padding:38px 24px 30px;}
+  .masthead-inner,.wrap{max-width:720px;margin:0 auto;}
+  .eyebrow{font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:var(--brass-light);margin-bottom:14px;}
+  .masthead h1{font-size:clamp(26px,4.5vw,38px);font-weight:600;margin:0 0 8px;}
+  .masthead p.sub{margin:0;color:rgba(246,242,233,0.78);font-size:15px;max-width:58ch;}
+  .wrap{padding:36px 24px 90px;}
+  .intro-card{background:var(--paper-2);border-left:3px solid var(--brass);padding:20px 22px;border-radius:var(--radius);font-size:14.5px;color:var(--ink-soft);margin-bottom:40px;}
+  .intro-card p{margin:0 0 10px;} .intro-card p:last-child{margin:0;}
+  section.block{margin-bottom:44px;}
+  .block-head{display:flex;align-items:baseline;gap:12px;border-bottom:1px solid var(--line);padding-bottom:12px;margin-bottom:6px;}
+  .block-letter{font-family:'Source Serif 4',serif;font-size:15px;font-weight:600;color:var(--paper);background:var(--navy);width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
+  .block-letter.oxblood{background:var(--oxblood);} .block-letter.sage{background:var(--sage);}
+  .block-head h2{font-size:19px;margin:0;font-weight:600;}
+  .block-desc{font-size:13.5px;color:var(--ink-soft);margin:10px 0 22px;max-width:62ch;}
+  .likert-item{margin-bottom:22px;}
+  .likert-q{font-size:14.5px;margin-bottom:10px;font-weight:500;}
+  .likert-scale{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;}
+  .likert-opt{position:relative;}
+  .likert-opt input{position:absolute;opacity:0;width:100%;height:100%;cursor:pointer;margin:0;}
+  .likert-opt label{display:block;text-align:center;padding:9px 4px 8px;border:1px solid var(--line);border-radius:var(--radius);font-size:11.5px;color:var(--ink-soft);background:#fff;cursor:pointer;transition:all .12s ease;line-height:1.3;}
+  .likert-opt input:checked + label{background:var(--navy);border-color:var(--navy);color:var(--paper);}
+  .likert-opt input:focus-visible + label{outline:2px solid var(--brass);outline-offset:1px;}
+  textarea,select{width:100%;font-family:inherit;font-size:14.5px;padding:12px 14px;border:1px solid var(--line);border-radius:var(--radius);background:#fff;color:var(--ink);resize:vertical;}
+  textarea{min-height:88px;}
+  textarea:focus,select:focus{outline:2px solid var(--brass);}
+  .field{margin-bottom:22px;}
+  .field-label{font-size:14.5px;font-weight:500;margin-bottom:8px;display:block;}
+  .optional-pill{display:inline-block;font-size:10.5px;text-transform:uppercase;letter-spacing:0.04em;color:var(--sage);background:var(--sage-light);padding:2px 8px;border-radius:20px;margin-left:8px;vertical-align:middle;}
+  .hp{position:absolute;left:-9999px;height:0;overflow:hidden;}
+  .submit-zone{margin-top:48px;padding-top:30px;border-top:2px solid var(--navy);text-align:center;}
+  .reassure{font-size:13px;color:var(--ink-soft);max-width:50ch;margin:0 auto 22px;}
+  button.submit-btn{background:var(--navy);color:var(--paper);border:none;font-family:'Source Serif 4',serif;font-size:16px;font-weight:600;padding:14px 40px;border-radius:var(--radius);cursor:pointer;}
+  button.submit-btn:hover{background:#0f1830;} button.submit-btn:disabled{opacity:.6;cursor:wait;}
+  .status-msg{margin-top:16px;font-size:13.5px;color:var(--oxblood);}
+  #thankyou{display:none;text-align:center;padding:60px 24px;max-width:520px;margin:0 auto;}
+  #thankyou h2{font-size:24px;margin:0 0 12px;} #thankyou p{color:var(--ink-soft);font-size:14.5px;}
+  footer.foot{text-align:center;font-size:11.5px;color:var(--ink-soft);padding:24px;}
+  @media (max-width:520px){.likert-opt label{font-size:10px;padding:8px 2px 7px;}}
+</style>
+</head>
+<body>
+
+<div class="masthead"><div class="masthead-inner">
+  <div class="eyebrow">Podar International School · Jahangirabad, Adajan, Surat</div>
+  <h1>Leadership Listening</h1>
+  <p class="sub">An anonymous, twice-a-year check on how school leadership is experienced by the people who work here. About 6 minutes. No names, no logins.</p>
+</div></div>
+
+<div class="wrap">
+  <div class="intro-card">
+    <p><b>Why now:</b> a Principal who is only ever told "everything is fine" cannot improve. This round is for the Principal's own growth — it is <b>not</b> an appraisal of any staff member and never will be used as one.</p>
+    <p><b>How your answers are protected:</b> no name, email or device ID is collected; only the <b>date</b> (not time) is stored; results are only ever shown for groups of <b>5 or more</b>; written comments are shown in random order with nothing attached.</p>
+    <p><b>What happens next:</b> within 30 days staff will see a "You said → We did" note on what was heard and what is changing.</p>
+    <p><b>Please be specific.</b> One concrete example is worth more than ten ticks. If a comment names a person or incident, you are choosing to be identifiable — describe the pattern instead.</p>
+  </div>
+
+  <form id="leadForm" novalidate>
+    <div class="hp" aria-hidden="true"><label>Website <input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
+    <div id="sections"></div>
+
+    <section class="block">
+      <div class="block-head"><div class="block-letter oxblood">✎</div><h2>In your own words</h2></div>
+      <p class="block-desc">These two questions matter most. Short and concrete is perfect.</p>
+      <div class="field">
+        <label class="field-label" for="ld_help">One thing the Principal does that genuinely helps you do your job better.</label>
+        <textarea id="ld_help" name="ld_help" placeholder="A specific habit, decision or moment."></textarea>
+      </div>
+      <div class="field">
+        <label class="field-label" for="ld_change">If you could change ONE thing about how the school is led, what should it be — and what would that change for you?</label>
+        <textarea id="ld_change" name="ld_change" placeholder="One thing. Be as direct as you like."></textarea>
+      </div>
+      <div class="field">
+        <label class="field-label" for="ld_unsaid">Anything leadership probably does not know, but should? <span class="optional-pill">Optional</span></label>
+        <textarea id="ld_unsaid" name="ld_unsaid"></textarea>
+      </div>
+    </section>
+
+    <section class="block">
+      <div class="block-head"><div class="block-letter" style="background:var(--ink-soft)">i</div><h2>One piece of context <span class="optional-pill">Optional</span></h2></div>
+      <p class="block-desc">Only so results can be read by group. If your group is small, choose "Prefer not to say" — we'd rather have your honest answers than a guessable identity.</p>
+      <div class="field">
+        <select name="ld_group" aria-label="Your group">
+          <option value="">Prefer not to say</option>
+          <option>Primary teaching staff</option>
+          <option>Middle school teaching staff</option>
+          <option>Secondary teaching staff</option>
+          <option>Coordinators / HODs</option>
+          <option>Non-teaching / support staff</option>
+        </select>
+      </div>
+    </section>
+
+    <div class="submit-zone">
+      <p class="reassure">Once submitted, this response cannot be traced back to you or edited by the office. Please read it over before sending.</p>
+      <button type="submit" class="submit-btn" id="submitBtn">Submit Anonymously</button>
+      <div class="status-msg" id="statusMsg" role="alert"></div>
+    </div>
+  </form>
+
+  <div id="thankyou">
+    <h2 class="serif">Received — thank you.</h2>
+    <p>Your response has been added anonymously. What was heard, and what is changing because of it, will be shared with all staff.</p>
+  </div>
+</div>
+
+<footer class="foot">Podar International School, Jahangirabad · Results are reported only for groups of 5 or more · Responses are never shared individually.</footer>
+
+<script src="config.js"></script>
+<script>
+  // Agreement scale used for every statement. Items marked rev:true are worded
+  // negatively; the analysis dashboard flips them (6 - value). Keep ids in sync
+  // with backend/script.gs (LEADERSHIP_HEADERS) and analysis/leadership-dashboard.html.
+  const SCALE = ['Strongly disagree','Disagree','Neutral','Agree','Strongly agree'];
+  const SECTIONS = [
+    {t:'Vision & Direction', d:'Do you know where we are headed?', items:[
+      ['ld_v1','I can explain the Principal\'s top priorities for this school in one sentence.'],
+      ['ld_v2','School priorities seem to change so often that it is hard to know what matters most.']]},
+    {t:'Instructional Leadership', d:'Classroom visits and feedback.', items:[
+      ['ld_i1','The feedback I receive after classroom observations helps me improve my teaching.'],
+      ['ld_i2','Classroom visits by leadership feel more like inspection than support.']]},
+    {t:'Fairness & Consistency', d:'How even-handed things feel.', items:[
+      ['ld_f1','Opportunities, duties and recognition are given on merit here.'],
+      ['ld_f2','Rules and expectations are applied differently depending on who the person is.']]},
+    {t:'Approachability & Voice', d:'Is it safe to disagree?', items:[
+      ['ld_a1','I can disagree with a decision of the Principal without worrying about consequences.'],
+      ['ld_a2','When I raise a concern with leadership, I see something change.']]},
+    {t:'Recognition & Development', d:'Growth and appreciation.', items:[
+      ['ld_r1','In the past year I have had a meaningful professional growth opportunity at this school.'],
+      ['ld_r2','Good work is acknowledged by school leadership, not just expected.']]},
+    {t:'Systems & Communication', d:'Clarity, timing, workload.', items:[
+      ['ld_s1','Decisions that affect my work are communicated clearly and early enough.'],
+      ['ld_s2','I am often asked to do things at short notice that could have been planned.']]},
+    {t:'Overall', d:'', items:[
+      ['ld_overall','I would recommend our school\'s leadership environment to a colleague I respect.']]}
+  ];
+  const LETTERS = ['A','B','C','D','E','F','G'];
+
+  const host = document.getElementById('sections');
+  SECTIONS.forEach((s, si) => {
+    const el = document.createElement('section');
+    el.className = 'block';
+    let html = `<div class="block-head"><div class="block-letter ${si%3===1?'oxblood':si%3===2?'sage':''}">${LETTERS[si]}</div><h2>${s.t}</h2></div>`;
+    if (s.d) html += `<p class="block-desc">${s.d}</p>`;
+    s.items.forEach(([id, q], qi) => {
+      html += `<div class="likert-item"><div class="likert-q">${qi+1}. ${q}</div><div class="likert-scale">` +
+        SCALE.map((lab, i) => `<div class="likert-opt"><input type="radio" name="${id}" value="${i+1}" id="${id}_${i+1}"><label for="${id}_${i+1}">${lab}</label></div>`).join('') +
+        `</div></div>`;
+    });
+    el.innerHTML = html;
+    host.appendChild(el);
+  });
+
+  const form = document.getElementById('leadForm');
+  const statusMsg = document.getElementById('statusMsg');
+  const submitBtn = document.getElementById('submitBtn');
+
+  form.addEventListener('submit', async function(e){
+    e.preventDefault();
+    statusMsg.textContent = '';
+    const payload = {};
+    new FormData(form).forEach((v, k) => { payload[k] = v; });
+
+    const ratingIds = SECTIONS.flatMap(s => s.items.map(i => i[0]));
+    const missing = ratingIds.filter(id => !payload[id]);
+    if (missing.length) {
+      statusMsg.textContent = `Please answer all ${ratingIds.length} rating statements (${missing.length} left).`;
+      const first = form.querySelector(`input[name="${missing[0]}"]`);
+      if (first) first.closest('.likert-item').scrollIntoView({behavior:'smooth', block:'center'});
+      return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Submitting...';
+    payload.form = 'leadership360';
+    payload.ld_cycle = window.LEADERSHIP_CYCLE || '';
+
+    try {
+      if (!window.FORM_ENDPOINT || window.FORM_ENDPOINT.indexOf('PASTE_YOUR') === 0) {
+        throw new Error('FORM_ENDPOINT is not set. Copy config.example.js to config.js and add your Apps Script /exec URL.');
+      }
+      // no-cors: Apps Script gives no CORS preflight; response is opaque, so
+      // "no network error" is treated as success (same approach as index.html).
+      await fetch(window.FORM_ENDPOINT, {
+        method: 'POST', mode: 'no-cors',
+        headers: {'Content-Type': 'text/plain;charset=utf-8'},
+        body: JSON.stringify(payload)
+      });
+      form.style.display = 'none';
+      document.getElementById('thankyou').style.display = 'block';
+      window.scrollTo({top:0, behavior:'smooth'});
+    } catch (err) {
+      statusMsg.textContent = 'Something went wrong sending this. Please check your connection and try again.';
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Submit Anonymously';
+    }
+  });
+</script>
+</body>
+</html>

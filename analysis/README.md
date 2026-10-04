@@ -20,3 +20,7 @@ Keeping this dashboard as a local, file-based tool (rather than a hosted page re
 ## Customizing
 
 The rubric categories and Likert fields in `dashboard.html` mirror the field names in `frontend/index.html` and `backend/script.gs` (e.g. `wb_worklife`, `wl_planning`). If you change the form's questions, update the corresponding field names here to keep the three in sync.
+
+## Leadership 360 Dashboard
+
+`leadership-dashboard.html` works the same way for the **Leadership360** sheet tab: export it as CSV and load it in the page. It suppresses any selection under 5 responses, merges small groups, flags polite-answer patterns, and includes a triangulation worksheet (survey + listening circles + behavioural data). If you change the questions in `frontend/leadership.html`, keep the `ld_*` ids in sync with `backend/script.gs` and the `DIMS`/`REV`/`PAIRS` constants in the dashboard.
