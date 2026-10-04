@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leadership 360 — Analysis Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<style>
+  :root{
+    --paper:#F6F2E9; --paper-2:#EFE9DA; --ink:#242524; --ink-soft:#5B5A54;
+    --navy:#17233D; --brass:#AD8A4E; --oxblood:#6E2A34; --sage:#4C6B4F; --sage-light:#DCE6DA;
+    --line:#D9D2C0; --red:#B23A48; --amber:#C08A2E; --green:#4C6B4F;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:'IBM Plex Sans','Segoe UI',Arial,sans-serif;line-height:1.5;}
+  h1,h2,h3{font-family:'Source Serif 4','Georgia',serif;margin:0;}
+  .masthead{background:var(--navy);color:var(--paper);padding:30px 24px;}
+  .masthead-inner,.wrap{max-width:960px;margin:0 auto;}
+  .masthead h1{font-size:26px;font-weight:600;} .masthead p{margin:6px 0 0;color:rgba(246,242,233,.75);font-size:14px;}
+  .wrap{padding:32px 24px 80px;}
+  .upload-card{background:var(--paper-2);border:1.5px dashed var(--brass);border-radius:4px;padding:28px;text-align:center;margin-bottom:28px;}
+  .upload-card input{display:none;}
+  .btn{display:inline-block;background:var(--navy);color:var(--paper);padding:10px 22px;border-radius:3px;font-weight:600;cursor:pointer;font-size:14px;border:none;font-family:inherit;}
+  .btn.ghost{background:transparent;color:var(--navy);border:1px solid var(--navy);}
+  .hint{font-size:12.5px;color:var(--ink-soft);margin:12px auto 0;max-width:62ch;}
+  #dashboard{display:none;}
+  .toolbar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:24px;font-size:13.5px;}
+  select{font:inherit;padding:7px 10px;border:1px solid var(--line);border-radius:3px;background:#fff;}
+  .stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:34px;}
+  .stat-box{background:#fff;border:1px solid var(--line);border-radius:4px;padding:16px;text-align:center;}
+  .stat-box .num{font-family:'Source Serif 4',serif;font-size:28px;font-weight:600;color:var(--navy);}
+  .stat-box .lbl{font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-soft);margin-top:4px;}
+  section.block{margin-bottom:42px;}
+  .block-head{border-bottom:1px solid var(--line);padding-bottom:10px;margin-bottom:16px;}
+  .block-head h2{font-size:18px;font-weight:600;} .block-head .tag{font-size:11.5px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.04em;}
+  .metric-row{display:flex;align-items:center;gap:14px;margin-bottom:12px;background:#fff;border:1px solid var(--line);border-radius:4px;padding:12px 16px;}
+  .metric-label{flex:0 0 250px;font-size:13.5px;}
+  .bar-track{flex:1;height:10px;background:var(--paper-2);border-radius:6px;overflow:hidden;}
+  .bar-fill{height:100%;border-radius:6px;}
+  .metric-val{flex:0 0 70px;text-align:right;font-weight:600;font-size:13.5px;}
+  .flag{display:inline-block;font-size:10px;text-transform:uppercase;letter-spacing:.03em;padding:2px 7px;border-radius:20px;margin-left:8px;}
+  .flag.red{background:#FBE4E4;color:var(--red);} .flag.amber{background:#FBF0DA;color:var(--amber);} .flag.green{background:var(--sage-light);color:var(--sage);}
+  table{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--line);font-size:13px;}
+  th,td{padding:9px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top;}
+  th{background:var(--paper-2);font-size:11.5px;text-transform:uppercase;letter-spacing:.03em;}
+  td.num{text-align:center;font-variant-numeric:tabular-nums;} .muted{color:var(--ink-soft);}
+  .card{background:#fff;border:1px solid var(--line);border-radius:4px;padding:16px;margin-bottom:14px;font-size:13.5px;}
+  .card.warn{border-left:4px solid var(--amber);} .card.bad{border-left:4px solid var(--red);} .card.good{border-left:4px solid var(--green);}
+  .comment{background:#fff;border:1px solid var(--line);border-radius:4px;padding:10px 14px;margin-bottom:8px;font-size:13.5px;white-space:pre-wrap;}
+  h3.sub{font-size:15px;margin:18px 0 8px;color:var(--navy);}
+  .guide li{margin-bottom:6px;font-size:13.5px;}
+  .verdict-confirmed{color:var(--red);font-weight:600;} .verdict-strength{color:var(--green);font-weight:600;} .verdict-conflict{color:var(--amber);font-weight:600;}
+  @media(max-width:700px){.stat-row{grid-template-columns:1fr 1fr;}.metric-label{flex-basis:150px;}}
+  @media print{.upload-card,.toolbar,.noprint{display:none!important;} body{background:#fff;}}
+</style>
+</head>
+<body>
+<div class="masthead"><div class="masthead-inner">
+  <h1>Leadership 360 — Analysis Dashboard</h1>
+  <p>Offline, client-side. Nothing leaves this browser tab. Reports groups of 5+ only.</p>
+</div></div>
+
+<div class="wrap">
+  <div class="upload-card">
+    <label class="btn" for="csvFile">Choose Leadership360 CSV</label>
+    <input type="file" id="csvFile" accept=".csv">
+    <div class="hint">In your Google Sheet open the <b>Leadership360</b> tab → File → Download → CSV. Do not share the raw CSV; share only this dashboard's printed summary.</div>
+    <div id="fileName" style="margin-top:10px;font-size:13px;color:var(--sage);font-weight:600;"></div>
+  </div>
+
+  <div id="dashboard">
+    <div class="toolbar">
+      <label>Round: <select id="cycleSel"></select></label>
+      <button class="btn ghost" id="reshuffle" type="button">Reshuffle comments</button>
+      <button class="btn ghost" id="printBtn" type="button">Print / Save as PDF</button>
+    </div>
+    <div id="suppressed" class="card bad" style="display:none"></div>
+    <div id="report">
+      <div class="stat-row" id="stats"></div>
+
+      <section class="block"><div class="block-head"><h2>1. Six dimensions</h2><div class="tag">Reverse-worded items already flipped · 1–5, higher is better</div></div>
+        <div id="dims"></div></section>
+
+      <section class="block"><div class="block-head"><h2>2. By group</h2><div class="tag">Groups under 5 are merged into "Other / small groups"; omitted if still under 5</div></div>
+        <div id="groups"></div></section>
+
+      <section class="block" id="trendBlock" style="display:none"><div class="block-head"><h2>3. Round-to-round change</h2><div class="tag">Compared with the earliest round in the file</div></div>
+        <div id="trend"></div></section>
+
+      <section class="block"><div class="block-head"><h2>4. How much to trust these numbers</h2><div class="tag">Polite-answer detector</div></div>
+        <div id="quality"></div></section>
+
+      <section class="block"><div class="block-head"><h2>5. Written comments</h2><div class="tag">Random order · no group, date or timestamp attached</div></div>
+        <p class="hint" style="margin:0 0 12px;max-width:none">Read for <b>repeated themes</b>, not for who wrote them. Do not try to identify authors; one slip ends trust in the whole system.</p>
+        <div id="comments"></div></section>
+    </div>
+
+    <section class="block noprint-section"><div class="block-head"><h2>6. Triangulation worksheet</h2><div class="tag">A finding is real only when 3 independent sources agree</div></div>
+      <p class="hint" style="margin:0 0 12px;max-width:none">Survey signal fills in automatically. Enter what the <b>external trainer's listening-circle report</b> and your <b>behavioural data</b> (attrition, absenteeism, optional-event participation, who bypasses coordinators) say for each dimension. Nothing here is saved or sent anywhere.</p>
+      <table id="tri"></table>
+      <h3 class="sub">Behavioural data to pull each term</h3>
+      <ul class="guide">
+        <li>Resignations and exit-interview themes (last 18 months), by wing.</li>
+        <li>Leave / absenteeism spikes: Mondays, before observation weeks, after big circulars.</li>
+        <li>Voluntary participation: CPD, committees, optional events.</li>
+        <li>Who goes straight to the Principal, who avoids; who stops speaking after you speak.</li>
+      </ul>
+    </section>
+  </div>
+</div>
+
+<script>
+const MIN_GROUP = 5;
+const DIMS = [
+  {k:'V', name:'Vision & Direction',        items:['ld_v1','ld_v2']},
+  {k:'I', name:'Instructional Leadership',  items:['ld_i1','ld_i2']},
+  {k:'F', name:'Fairness & Consistency',    items:['ld_f1','ld_f2']},
+  {k:'A', name:'Approachability & Voice',   items:['ld_a1','ld_a2']},
+  {k:'R', name:'Recognition & Development', items:['ld_r1','ld_r2']},
+  {k:'S', name:'Systems & Communication',   items:['ld_s1','ld_s2']}
+];
+const REV = new Set(['ld_v2','ld_i2','ld_f2','ld_s2']);          // negatively worded
+const PAIRS = [['ld_v1','ld_v2'],['ld_i1','ld_i2'],['ld_f1','ld_f2'],['ld_s1','ld_s2']]; // positive + reversed twin
+const RATING_IDS = DIMS.flatMap(d => d.items).concat('ld_overall');
+
+let ALL = [], ROWS = [];
+
+const $ = id => document.getElementById(id);
+const mean = a => a.length ? a.reduce((x,y)=>x+y,0)/a.length : null;
+const sd = a => { if(a.length<2) return 0; const m=mean(a); return Math.sqrt(mean(a.map(x=>(x-m)**2))); };
+const val = (r,id) => { const v = Number(r[id]); return v>=1 && v<=5 ? (REV.has(id)?6-v:v) : null; };
+const raw = (r,id) => { const v = Number(r[id]); return v>=1 && v<=5 ? v : null; };
+const status = s => s>=4 ? {c:'green',l:'Strong',sig:'Positive'} : s>=3.2 ? {c:'amber',l:'Watch',sig:'Mixed'} : {c:'red',l:'Concern',sig:'Negative'};
+const col = c => `var(--${c})`;
+
+$('csvFile').addEventListener('change', e => {
+  const f = e.target.files[0]; if(!f) return;
+  $('fileName').textContent = f.name;
+  Papa.parse(f, {header:true, skipEmptyLines:true, complete: res => {
+    ALL = res.data.filter(r => RATING_IDS.some(id => raw(r,id) !== null));
+    const cycles = [...new Set(ALL.map(r => r.ld_cycle || '(none)'))].sort();
+    $('cycleSel').innerHTML = '<option value="__all">All rounds</option>' + cycles.map(c=>`<option>${c.replace(/</g,'&lt;')}</option>`).join('');
+    $('cycleSel').value = cycles[cycles.length-1];
+    $('dashboard').style.display = 'block';
+    render();
+  }});
+});
+$('cycleSel').addEventListener('change', render);
+$('reshuffle').addEventListener('click', () => renderComments());
+$('printBtn').addEventListener('click', () => window.print());
+
+function currentRows(){
+  const c = $('cycleSel').value;
+  return c==='__all' ? ALL : ALL.filter(r => (r.ld_cycle||'(none)')===c);
+}
+const respMean = r => mean(DIMS.flatMap(d=>d.items).map(id=>val(r,id)).filter(v=>v!==null));
+const dimScore = (rows,d) => mean(rows.flatMap(r=>d.items.map(id=>val(r,id))).filter(v=>v!==null));
+
+function render(){
+  ROWS = currentRows();
+  const small = ROWS.length < MIN_GROUP;
+  $('suppressed').style.display = small ? 'block' : 'none';
+  $('report').style.display = small ? 'none' : 'block';
+  $('suppressed').innerHTML = `<b>Only ${ROWS.length} response(s) in this selection.</b> Results are suppressed below ${MIN_GROUP} so no one can be identified. Wait for more responses or choose another round.`;
+  renderTriangulation();
+  if(small) return;
+  renderStats(); renderDims(); renderGroups(); renderTrend(); renderQuality(); renderComments();
+}
+
+function renderStats(){
+  const ov = mean(ROWS.map(r=>val(r,'ld_overall')).filter(v=>v!==null));
+  const dm = mean(DIMS.map(d=>dimScore(ROWS,d)));
+  $('stats').innerHTML = [
+    [ROWS.length,'Responses'],[dm.toFixed(2),'Mean of 6 dimensions'],
+    [ov===null?'–':ov.toFixed(2),'Overall (recommend)'],
+    [new Set(ROWS.map(r=>r.ld_group||'')).size,'Groups represented']
+  ].map(([n,l])=>`<div class="stat-box"><div class="num">${n}</div><div class="lbl">${l}</div></div>`).join('');
+}
+
+function renderDims(){
+  const rows = DIMS.map(d=>({d, s:dimScore(ROWS,d)})).sort((a,b)=>a.s-b.s);
+  $('dims').innerHTML = rows.map(({d,s}) => {
+    const st = status(s);
+    return `<div class="metric-row"><div class="metric-label">${d.name}<span class="flag ${st.c}">${st.l}</span></div>
+      <div class="bar-track"><div class="bar-fill" style="width:${s/5*100}%;background:${col(st.c)}"></div></div>
+      <div class="metric-val">${s.toFixed(2)}</div></div>`;
+  }).join('') + `<p class="hint" style="max-width:none">Sorted lowest first. Strong ≥ 4.0 · Watch 3.2–3.99 · Concern &lt; 3.2. Start with the top rows.</p>`;
+}
+
+function renderGroups(){
+  const by = {};
+  ROWS.forEach(r => { const g = r.ld_group || 'Prefer not to say'; (by[g] = by[g]||[]).push(r); });
+  const shown = [], pool = [];
+  Object.entries(by).forEach(([g,rs]) => (rs.length>=MIN_GROUP ? shown.push([g,rs]) : pool.push(...rs)));
+  if(pool.length >= MIN_GROUP) shown.push(['Other / small groups', pool]);
+  if(!shown.length){ $('groups').innerHTML = '<div class="card warn">No group has 5 or more responses, so no group breakdown is shown.</div>'; return; }
+  $('groups').innerHTML = '<table><tr><th>Group</th><th>n</th>' + DIMS.map(d=>`<th>${d.k}</th>`).join('') + '</tr>' +
+    shown.map(([g,rs]) => `<tr><td>${g}</td><td class="num">${rs.length}</td>` +
+      DIMS.map(d => { const s = dimScore(rs,d), st = status(s); return `<td class="num" style="color:${col(st.c)};font-weight:600">${s.toFixed(2)}</td>`; }).join('') + '</tr>').join('') +
+    '</table><p class="hint" style="max-width:none">' + DIMS.map(d=>d.k+' = '+d.name).join(' · ') + '</p>';
+}
+
+function renderTrend(){
+  const cycles = [...new Set(ALL.map(r=>r.ld_cycle||'(none)'))].sort();
+  $('trendBlock').style.display = cycles.length>1 ? 'block' : 'none';
+  if(cycles.length<2) return;
+  const base = cycles[0];
+  const eligible = cycles.filter(c => ALL.filter(r=>(r.ld_cycle||'(none)')===c).length >= MIN_GROUP);
+  $('trend').innerHTML = '<table><tr><th>Dimension</th>' + eligible.map(c=>`<th>${c.replace(/</g,'&lt;')}</th>`).join('') + '<th>Change</th></tr>' +
+    DIMS.map(d => {
+      const sc = eligible.map(c => dimScore(ALL.filter(r=>(r.ld_cycle||'(none)')===c), d));
+      const delta = sc.length>1 ? sc[sc.length-1]-sc[0] : null;
+      const dc = delta===null ? '' : delta>=0.2 ? 'var(--green)' : delta<=-0.2 ? 'var(--red)' : 'var(--ink-soft)';
+      return `<tr><td>${d.name}</td>${sc.map(s=>`<td class="num">${s.toFixed(2)}</td>`).join('')}<td class="num" style="color:${dc};font-weight:600">${delta===null?'–':(delta>0?'+':'')+delta.toFixed(2)}</td></tr>`;
+    }).join('') + `</table><p class="hint" style="max-width:none">Baseline: ${base}. A move of 0.2 or more is worth discussing; smaller changes are noise.</p>`;
+}
+
+function renderQuality(){
+  const n = ROWS.length, notes = [];
+  const straight = ROWS.filter(r => { const v = RATING_IDS.map(id=>raw(r,id)); return v.every(x=>x!==null) && new Set(v).size===1; }).length;
+  const ceiling  = ROWS.filter(r => (respMean(r)||0) >= 4.8).length;
+  const contra   = ROWS.filter(r => PAIRS.filter(([p,q]) => { const a=val(r,p), b=val(r,q); return a!==null && b!==null && Math.abs(a-b)>=3; }).length >= 2).length;
+  const sdMeans  = sd(ROWS.map(respMean).filter(v=>v!==null));
+  const all = mean(DIMS.map(d=>dimScore(ROWS,d)));
+  const flagged = new Set();
+  ROWS.forEach((r,i) => {
+    const v = RATING_IDS.map(id=>raw(r,id));
+    if(v.every(x=>x!==null) && new Set(v).size===1) flagged.add(i);
+    if((respMean(r)||0)>=4.8) flagged.add(i);
+    if(PAIRS.filter(([p,q])=>{const a=val(r,p),b=val(r,q);return a!==null&&b!==null&&Math.abs(a-b)>=3;}).length>=2) flagged.add(i);
+  });
+  const pct = flagged.size/n;
+  const norm = s => (s||'').toLowerCase().replace(/[^a-z0-9 ]/g,'').trim();
+  const changes = ROWS.map(r=>r.ld_change||'');
+  const blank = changes.filter(t=>!t.trim()).length;
+  const short = changes.filter(t=>t.trim() && t.trim().split(/\s+/).length<4).length;
+  const seen = {}, dup = changes.filter(t=>{const k=norm(t); if(k.length<8) return false; seen[k]=(seen[k]||0)+1; return seen[k]===2;}).length;
+  const uniform = sdMeans < 0.35 && all > 4.3;
+
+  const conf = (pct<0.10 && !uniform) ? ['good','High confidence'] : (pct<0.25 && !uniform) ? ['warn','Medium confidence'] : ['bad','Low confidence — treat scores as "polite"'];
+  let h = `<div class="card ${conf[0]}"><b>${conf[1]}.</b> ${flagged.size} of ${n} responses (${Math.round(pct*100)}%) show a polite-answer pattern.</div>`;
+  h += `<table><tr><th>Check</th><th>Result</th><th>What it means</th></tr>
+    <tr><td>Same answer to every item</td><td class="num">${straight}</td><td class="muted">Ticking one column without reading.</td></tr>
+    <tr><td>Near-perfect average (≥ 4.8)</td><td class="num">${ceiling}</td><td class="muted">Courtesy bias or fear. Real averages rarely sit this high.</td></tr>
+    <tr><td>Contradicts own reverse-worded items</td><td class="num">${contra}</td><td class="muted">Praise on "I can disagree freely" but agrees "rules differ by person".</td></tr>
+    <tr><td>Spread of respondent averages (SD)</td><td class="num">${sdMeans.toFixed(2)}</td><td class="muted">${uniform?'<b>Suspiciously uniform and high.</b>':'Healthy variation expected: roughly 0.4–0.8.'}</td></tr>
+    <tr><td>"Change ONE thing" left blank / under 4 words</td><td class="num">${blank} / ${short}</td><td class="muted">Silence on the key question is itself a signal.</td></tr>
+    <tr><td>Identical or near-identical wording</td><td class="num">${dup}</td><td class="muted">Possible coordination or a shared "safe line".</td></tr></table>`;
+  h += `<p class="hint" style="max-width:none">High scores with low spread, no concrete comments, and rising resignations or absenteeism mean the survey is showing politeness, not trust. Use section 6 before concluding anything.</p>`;
+  $('quality').innerHTML = h;
+}
+
+function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} return a; }
+function renderComments(){
+  const host = $('comments'); host.innerHTML = '';
+  [['ld_help','What helps people do their job'],['ld_change','One thing to change'],['ld_unsaid','What leadership may not know']].forEach(([id,title]) => {
+    const t = ROWS.map(r=>(r[id]||'').trim()).filter(Boolean);
+    const h = document.createElement('h3'); h.className='sub'; h.textContent = `${title} (${t.length})`; host.appendChild(h);
+    if(!t.length){ const d=document.createElement('div'); d.className='muted'; d.textContent='No entries.'; host.appendChild(d); return; }
+    shuffle(t).forEach(x => { const d=document.createElement('div'); d.className='comment'; d.textContent=x; host.appendChild(d); });
+  });
+}
+
+// ---- Triangulation worksheet (in-memory only) ----
+const TRI_STATE = {};
+function renderTriangulation(){
+  const opts = ['','Positive','Mixed','Negative'].map(o=>`<option>${o}</option>`).join('');
+  const t = $('tri');
+  t.innerHTML = '<tr><th>Dimension</th><th>1. Survey (auto)</th><th>2. Listening circles (external trainer)</th><th>3. Behavioural data</th><th>Verdict</th></tr>' +
+    DIMS.map(d => {
+      const s = ROWS.length>=MIN_GROUP ? status(dimScore(ROWS,d)) : null;
+      return `<tr data-k="${d.k}"><td>${d.name}</td><td>${s?`<span class="flag ${s.c}" style="margin:0">${s.sig}</span> <span class="muted">${dimScore(ROWS,d).toFixed(2)}</span>`:'<span class="muted">n &lt; 5</span>'}</td>
+        <td><select class="c">${opts}</select></td><td><select class="b">${opts}</select></td><td class="v muted">–</td></tr>`;
+    }).join('');
+  t.querySelectorAll('tr[data-k]').forEach(tr => {
+    const k = tr.dataset.k, d = DIMS.find(x=>x.k===k);
+    const c = tr.querySelector('.c'), b = tr.querySelector('.b');
+    const saved = TRI_STATE[k] || {}; c.value = saved.c||''; b.value = saved.b||'';
+    const upd = () => {
+      TRI_STATE[k] = {c:c.value, b:b.value};
+      const s = ROWS.length>=MIN_GROUP ? status(dimScore(ROWS,d)).sig : '';
+      const cell = tr.querySelector('.v');
+      if(!s || !c.value || !b.value){ cell.className='v muted'; cell.textContent='Need all 3 sources'; return; }
+      if(s===c.value && c.value===b.value){
+        cell.className = s==='Negative' ? 'v verdict-confirmed' : s==='Positive' ? 'v verdict-strength' : 'v verdict-conflict';
+        cell.textContent = s==='Negative' ? 'CONFIRMED PROBLEM — act this term' : s==='Positive' ? 'Confirmed strength — protect it' : 'Consistently mixed — probe with a stay interview';
+      } else { cell.className='v verdict-conflict'; cell.textContent = 'Sources disagree — investigate before acting'; }
+    };
+    c.addEventListener('change',upd); b.addEventListener('change',upd); upd();
+  });
+}
+renderTriangulation();
+</script>
+</body>
+</html>

@@ -16,6 +16,18 @@ Built and used in production at Podar International School, Jahangirabad, Surat,
 - **Backend:** A Google Apps Script endpoint receives submissions and writes them directly to a Google Sheet — no database to provision, no server to patch.
 - **Analysis:** A companion offline dashboard reads the exported sheet data and produces theme/sentiment breakdowns for school leadership, without ever exposing raw submissions in a way that could re-identify a respondent.
 
+## Leadership 360 Module
+
+A second, anonymous instrument for the **Principal's own growth** — how leadership is experienced by staff — designed to separate honest feedback from polite feedback.
+
+- **`frontend/leadership.html`** — 13 rating statements across six dimensions (Vision, Instructional Leadership, Fairness, Approachability & Voice, Recognition & Development, Systems & Communication), four of them reverse-worded to catch box-ticking, plus open questions. Stores only the *date* (no time of day) and an optional broad group.
+- **`analysis/leadership-dashboard.html`** — offline dashboard: dimension scores, group breakdown with **minimum group size of 5**, round-to-round change, a **polite-answer detector** (straight-lining, ceiling effect, self-contradiction, uniformity, duplicate wording), randomised unattributed comments, and a **triangulation worksheet**.
+- **`docs/listening-circles-facilitator-guide.md`** — protocol and report template for an external facilitator running Principal-absent listening circles.
+
+A finding is treated as real only when **three sources agree**: survey, listening circles, and behavioural data (attrition, absenteeism, participation).
+
+Set `window.LEADERSHIP_CYCLE` in `config.js` (e.g. `2026-R1`) before each round so rounds can be compared.
+
 ## Getting Started (For Other Schools)
 
 1. **Fork this repository.**
@@ -24,6 +36,7 @@ Built and used in production at Podar International School, Jahangirabad, Surat,
    - Open Extensions → Apps Script, paste in `backend/script.gs`, and deploy it as a Web App (execute as "Me", accessible to "Anyone").
    - Copy the deployment URL.
 3. **Configure the frontend:**
+   - Copy `frontend/config.example.js` to `frontend/config.js` and paste your Apps Script URL. (Redeploy the Apps Script as a **new version** after pasting the updated `backend/script.gs` — the Leadership 360 form needs it.)
    - Update the form's submission endpoint in `index.html` (or `config.js`) with your Apps Script deployment URL.
 4. **Deploy to Netlify:**
    - Connect your fork to Netlify, or drag-and-drop the `frontend/` folder into Netlify's deploy UI.
@@ -31,7 +44,7 @@ Built and used in production at Podar International School, Jahangirabad, Surat,
 
 ## Anonymity & Data Handling Notes
 
-- No authentication or identifying metadata (IP, device fingerprint, timestamp-to-user mapping) is collected by design.
+- No authentication or identifying metadata (IP, device fingerprint) is collected by design. The pulse form records a timestamp per response; Leadership 360 records the **date only**. Do not share the raw sheet with anyone who could match submission times to people.
 - Schools deploying this tool are responsible for their own data governance and compliance with local student/staff data protection requirements.
 - This project provides the mechanism for anonymous collection; it does not provide legal guarantees of anonymity against determined re-identification (e.g., very small staff pools, distinctive phrasing).
 
