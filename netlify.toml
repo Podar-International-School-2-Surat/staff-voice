@@ -1,0 +1,19 @@
+# Netlify settings for Staff Voice.
+# Publishes only the frontend/ folder and (optionally) generates frontend/config.js
+# from Netlify environment variables, so the live Apps Script URL never has to be
+# committed to this public repo.
+#
+# In Netlify: Site configuration -> Environment variables, add
+#   FORM_ENDPOINT      = your Apps Script /exec URL
+#   LEADERSHIP_CYCLE   = 2026-R1        (change before each Leadership 360 round)
+#
+# If FORM_ENDPOINT is not set, no config.js is generated and any config.js you
+# upload yourself is left untouched.
+
+[build]
+  publish = "frontend"
+  command = '''
+    if [ -n "$FORM_ENDPOINT" ]; then
+      printf 'window.FORM_ENDPOINT = "%s";\nwindow.LEADERSHIP_CYCLE = "%s";\n' "$FORM_ENDPOINT" "${LEADERSHIP_CYCLE:-2026-R1}" > frontend/config.js
+    fi
+  '''
