@@ -38,7 +38,7 @@ Set `window.LEADERSHIP_CYCLE` in `config.js` (e.g. `2026-R1`) before each round 
 3. **Configure the frontend:**
    - Copy `frontend/config.example.js` to `frontend/config.js` and paste your Apps Script URL. (Redeploy the Apps Script as a **new version** after pasting the updated `backend/script.gs` — the Leadership 360 form needs it.)
    - Update the form's submission endpoint in `index.html` (or `config.js`) with your Apps Script deployment URL.
-4. **Deploy to Netlify:**
+4. **Deploy to Netlify** (a `netlify.toml` publishes `frontend/` and, if you set the `FORM_ENDPOINT` and `LEADERSHIP_CYCLE` environment variables in Netlify, generates `config.js` for you):
    - Connect your fork to Netlify, or drag-and-drop the `frontend/` folder into Netlify's deploy UI.
 5. **(Optional) Set up the analysis dashboard** using the exported Sheet data — instructions in `analysis/README.md`.
 
